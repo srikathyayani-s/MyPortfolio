@@ -21,6 +21,24 @@
       --accent2:   #a78bfa;
       --accent-glow: rgba(108,116,232,0.25);
       --grad: linear-gradient(135deg, #6c74e8, #a78bfa);
+      --nav-bg: rgba(13,13,15,0.85);
+      --nav-bg-scrolled: rgba(13,13,15,0.97);
+    }
+
+    body.light {
+      --bg:        #f5f5f7;
+      --surface:   #ffffff;
+      --surface2:  #ebebef;
+      --border:    rgba(0,0,0,0.09);
+      --text:      #44424a;
+      --text-dim:  #8a8799;
+      --text-bright: #111118;
+      --accent:    #4d55d4;
+      --accent2:   #7c3aed;
+      --accent-glow: rgba(77,85,212,0.2);
+      --grad: linear-gradient(135deg, #4d55d4, #7c3aed);
+      --nav-bg: rgba(245,245,247,0.88);
+      --nav-bg-scrolled: rgba(245,245,247,0.98);
     }
 
     html { scroll-behavior: smooth; }
@@ -44,10 +62,10 @@
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
       padding: 1rem 2.5rem;
-      background: rgba(13,13,15,0.85);
+      background: var(--nav-bg);
       backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
-      transition: background 0.3s;
+      transition: background 0.3s, border-color 0.3s;
     }
     .nav-logo {
       font-family: 'Space Grotesk', sans-serif;
@@ -68,6 +86,16 @@
       transition: opacity 0.2s, box-shadow 0.2s;
     }
     .nav-cta:hover { opacity: 0.88; box-shadow: 0 0 20px var(--accent-glow); }
+
+    /* ── THEME TOGGLE ── */
+    .theme-toggle {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 100px; cursor: pointer;
+      display: flex; align-items: center; gap: 0.4rem;
+      padding: 0.35rem 0.75rem; font-size: 0.8rem; font-weight: 500;
+      color: var(--text); transition: all 0.2s; white-space: nowrap;
+    }
+    .theme-toggle:hover { border-color: var(--accent); color: var(--text-bright); }
 
     /* ── HERO ── */
     #hero {
@@ -386,6 +414,10 @@
     <li><a href="#education">Education</a></li>
     <li><a href="#contact" class="nav-cta">Contact</a></li>
   </ul>
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle light/dark mode">
+    <span id="themeIcon">☀️</span>
+    <span id="themeLabel">Light</span>
+  </button>
 </nav>
 
 <!-- HERO -->
@@ -799,11 +831,29 @@
 
   // Nav scroll effect
   const nav = document.querySelector('nav');
-  window.addEventListener('scroll', () => {
-    nav.style.background = window.scrollY > 60
-      ? 'rgba(13,13,15,0.97)'
-      : 'rgba(13,13,15,0.85)';
-  }, { passive: true });
+  function updateNavBg() {
+    const scrolled = window.scrollY > 60;
+    nav.style.background = scrolled
+      ? getComputedStyle(document.body).getPropertyValue('--nav-bg-scrolled').trim()
+      : getComputedStyle(document.body).getPropertyValue('--nav-bg').trim();
+  }
+  window.addEventListener('scroll', updateNavBg, { passive: true });
+
+  // Theme toggle
+  const toggle = document.getElementById('themeToggle');
+  const icon   = document.getElementById('themeIcon');
+  const label  = document.getElementById('themeLabel');
+  let isLight  = true;
+  document.body.classList.add('light');
+  icon.textContent  = '🌙';
+  label.textContent = 'Dark';
+  toggle.addEventListener('click', () => {
+    isLight = !isLight;
+    document.body.classList.toggle('light', isLight);
+    icon.textContent  = isLight ? '🌙' : '☀️';
+    label.textContent = isLight ? 'Dark' : 'Light';
+    updateNavBg();
+  });
 </script>
 </body>
 </html>
